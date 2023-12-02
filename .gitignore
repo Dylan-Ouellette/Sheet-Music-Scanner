@@ -1,3 +1,9 @@
+
+# MuseScore backups
+*.mscz~
+
+# VVV TEMPLATE FOR PYTHON PROJECTS VVV
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
