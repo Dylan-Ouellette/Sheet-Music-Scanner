@@ -17,16 +17,16 @@ def findScale(fileName):
 
 
 def getHorizontalSum(img):
-    rightMargen = getRightMargen(img)
+    rightMargin = getRightMargin(img)
 
     # Takes a small vertical slice of the image starting at the right hand
-    # margen and 1% of total width to the left of that.
-    img = img[:, (rightMargen - int(len(img[0]) * 1/100)):rightMargen]
+    # margin and 1% of total width to the left of that.
+    img = img[:, (rightMargin - int(len(img[0]) * 1/100)):rightMargin]
 
     return img.sum(axis=1, dtype='int')/len(img)
 
 
-def getRightMargen(img):
+def getRightMargin(img):
     vSum = img.sum(axis=0, dtype='int')
     
     # Finds the location where staff starts by checking the change in
