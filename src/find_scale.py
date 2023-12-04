@@ -94,9 +94,11 @@ def scaleImage(inputFile, outputFile = "", target = 166):
     print(factor)
     print(scale)
 
-    size = newImageSize(scale, img)
-
-    ret = cv.resize(img, size, interpolation= cv.INTER_AREA)
+    if not (scale == target or scale + 1 == target or scale - 1 == target):
+        size = newImageSize(scale, img)
+        ret = cv.resize(img, size, interpolation= cv.INTER_AREA)
+    else:
+        ret = img
 
     if outputFile != "":
         cv.imwrite(outputFile, ret)

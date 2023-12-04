@@ -1,6 +1,10 @@
 
 # MuseScore backups
+.mscbackup
 *.mscz~
+
+# Test Results
+test*.png
 
 # VVV TEMPLATE FOR PYTHON PROJECTS VVV
 
