@@ -41,8 +41,6 @@ def main():
         cv.rectangle(img_rgb, element[0], (element[0][0] + element[2][0], element[0][1] + element[2][1]), (100,100,100), 2)
         cv.putText(img_rgb, element[1], element[0], cv.FONT_HERSHEY_SIMPLEX, 0.8, (10,169,21), 2)
 
-    print(notation_list[1])
-
     cv.imwrite('./data/images/testOutput.png', img_rgb)
 
     return 0
