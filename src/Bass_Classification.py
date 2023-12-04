@@ -1,12 +1,8 @@
 import cv2 as cv
 import numpy as np
-from matplotlib import pyplot as plt
-import math
-from PIL import Image
-import time
 from Classification_Functions import  checkDistance
 
-def Bass_Classifcation(img_gray, img_rgb, template_file, threshold):
+def Bass_Classification(img_gray, img_rgb, template_file, threshold):
 
     template = cv.imread(template_file, cv.IMREAD_GRAYSCALE)
     bass_w, bass_h = template.shape[::-1]
@@ -14,6 +10,7 @@ def Bass_Classifcation(img_gray, img_rgb, template_file, threshold):
     loc = np.where( res >= threshold)
     bass_pt_list = []
 
+    #draws rectangles
     for pt in zip(*loc[::-1]):
         if checkDistance(bass_pt_list, pt, 50):
             bass_pt_list.append(pt)

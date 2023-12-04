@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 from Classification_Functions import  checkDistance
 
-def Treble_Classifcation(img_gray, img_rgb, template_file, threshold):
+def Treble_Classification(img_gray, img_rgb, template_file, threshold):
 
     template = cv.imread(template_file, cv.IMREAD_GRAYSCALE)
     treble_w, treble_h = template.shape[::-1]
@@ -15,8 +15,6 @@ def Treble_Classifcation(img_gray, img_rgb, template_file, threshold):
         if checkDistance(treble_pt_list, pt, 50):
             treble_pt_list.append(pt)
             cv.rectangle(img_rgb, pt, (pt[0] + treble_w, pt[1] + treble_h), (0,255,0), 2)
-
-    print(len(treble_pt_list))
 
     page_length, page_width = img_gray.shape
 
