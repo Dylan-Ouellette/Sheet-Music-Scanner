@@ -18,7 +18,7 @@ def Bass_Classification(img_gray, img_rgb, template_file, threshold):
 
     bass_list = []
     for bass_pt in bass_pt_list:
-         bass_list.append([bass_pt, "bass"])
+         bass_list.append([bass_pt, "bass", (bass_w, bass_h)])
 
     return bass_list
 

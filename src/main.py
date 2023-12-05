@@ -4,6 +4,7 @@ from Bass_Classification import Bass_Classification
 from BarLine_Classification import BarLine_Classification
 from CreateBarBoxes import CreateBarBoxes
 from node_recognition_output import note_recognition
+from Structure_Data import Structure_Data
 import cv2 as cv
 
 def removeLine(image, value, output):
@@ -30,7 +31,7 @@ def main():
     treble_list = Treble_Classification(img_gray, img_rgb, './data/templates/treble.png', 0.5)
     bass_list = Bass_Classification(img_gray, img_rgb, './data/templates/bass.png', 0.5)
     barline_list = BarLine_Classification(img_gray, img_rgb, './data/templates/vertical_line.png', 0.8)
-
+    
     barline_w, barline_h = (cv.imread('./data/templates/vertical_line.png', cv.IMREAD_GRAYSCALE)).shape[::-1]
 
     barbox_list = CreateBarBoxes(treble_list, bass_list, barline_list, barline_w, barline_h, img_gray, img_rgb)
@@ -42,6 +43,10 @@ def main():
         cv.putText(img_rgb, element[1], element[0], cv.FONT_HERSHEY_SIMPLEX, 0.8, (10,169,21), 2)
 
     cv.imwrite('./data/images/testOutput.png', img_rgb)
+
+    structured_notation_list = Structure_Data((treble_list + bass_list + notation_list), barbox_list)
+
+    print(structured_notation_list[6])
 
     return 0
 
