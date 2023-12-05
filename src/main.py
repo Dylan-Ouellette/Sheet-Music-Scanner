@@ -5,6 +5,7 @@ from BarLine_Classification import BarLine_Classification
 from CreateBarBoxes import CreateBarBoxes
 from node_recognition_output import note_recognition
 from Structure_Data import Structure_Data
+from remove_detect_line import detectionLine
 import cv2 as cv
 
 def removeLine(image, value, output):
@@ -36,7 +37,8 @@ def main():
 
     barbox_list = CreateBarBoxes(treble_list, bass_list, barline_list, barline_w, barline_h, img_gray, img_rgb)
 
-    notation_list = note_recognition('./data/images/removeLineOutput.png')
+    line_list = detectionLine("./data/images/TempTestSheet.png", "./data/templates/staff line.png", 0.9)
+    notation_list = note_recognition(line_list, './data/images/removeLineOutput.png')
 
     for element in notation_list:
         cv.rectangle(img_rgb, element[0], (element[0][0] + element[2][0], element[0][1] + element[2][1]), (100,100,100), 2)

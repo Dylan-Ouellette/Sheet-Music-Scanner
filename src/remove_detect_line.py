@@ -2,9 +2,7 @@ import cv2
 from matplotlib import pyplot as plt
 from PIL import Image
 import numpy as np
-
-
-
+from Classification_Functions import checkDistance
 
 def removeLine(image, value, output):
     
@@ -30,36 +28,43 @@ def removeLine(image, value, output):
     plt.show()
     cv2.imwrite(output, vertical_inverted)
        
-def detectionLine(img): 
-    image = cv2.imread(img)
-    # Convert to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # Apply Gaussian blur
-    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-    # Binary threshold
-    _, binary_image = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    # Detect horizontal lines
-    horizontal_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 1))
-    detected_lines = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, horizontal_kernel, iterations=2)
-    #Second, process edge detection use Canny.
-    low_threshold = 50
-    high_threshold = 150
-    edges = cv2.Canny(detected_lines, low_threshold, high_threshold)
-    rho = 1  # distance resolution in pixels of the Hough grid
-    theta = np.pi / 180  # angular resolution in radians of the Hough grid
-    threshold = 15  # minimum number of votes (intersections in Hough grid cell)
-    min_line_length = 1000  # minimum number of pixels making up a line
-    max_line_gap = 250  # maximum gap in pixels between connectable line segments
-    line_image = np.copy(image) * 0  # creating a blank to draw lines on
-    lines = cv2.HoughLinesP(edges, rho, theta, threshold, np.array([]),
-                        min_line_length, max_line_gap)
-    newtup = ()
-    for line in lines:
-        for x1,y1,x2,y2 in line:
-            cv2.line(line_image,(x1,y1),(x2,y2 ),(255,0,0),5)
-            newtup+=('Coordinates of line:', 'Start point',(x1, y1), 'End point',(x2, y2))
-    for i in newtup:
-        print(i)
+def detectionLine(img, template, threshold): 
+
+    img_rgb = cv2.imread(img)
+    img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+
+    template = cv2.imread(template, cv2.IMREAD_GRAYSCALE)
+    line_w, line_h = template.shape[::-1]
+    res = cv2.matchTemplate(img_gray,template,cv2.TM_CCOEFF_NORMED)
+    loc = np.where( res >= threshold)
+    line_pt_list = []
+
+    page_length, page_width = img_gray.shape
+
+    #removes 5/6 left part of the page to reduce noise
+    for y in range(page_length):
+            for x in range(page_width):
+                if x > (page_width / 6):
+                    # Set pixel color to white (255, 255, 255)
+                    img_gray[y, x] = 255
+
+    # draws rectangles
+    for pt in zip(*loc[::-1]):
+        if checkDistance(line_pt_list, pt, 10):
+            line_pt_list.append(pt)
+            cv2.rectangle(img_rgb, pt, (pt[0] + line_w, pt[1] + line_h), (255,0,0), 2)
+
+    #adjust points to compensate for template
+    newList = []
+    for point in line_pt_list:
+         newList.append((point[0] + 30, point[1] + 5))
+    line_pt_list = newList
+
+    #splits list in chunks of 5
+    line_pt_list = [line_pt_list[i:i + 5] for i in range(0, len(line_pt_list), 5)]
+
+    return line_pt_list
+
 
        
 
