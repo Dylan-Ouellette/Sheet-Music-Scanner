@@ -46,8 +46,6 @@ def main():
 
     structured_notation_list = Structure_Data((treble_list + bass_list + notation_list), barbox_list)
 
-    print(structured_notation_list[6])
-
     return 0
 
 
