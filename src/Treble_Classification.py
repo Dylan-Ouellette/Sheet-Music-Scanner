@@ -28,6 +28,6 @@ def Treble_Classification(img_gray, img_rgb, template_file, threshold):
     
     treble_list = []
     for treble_pt in treble_pt_list:
-         treble_list.append([treble_pt, "treble"])
+         treble_list.append([treble_pt, "treble", (treble_w, treble_h)])
 
     return treble_list
