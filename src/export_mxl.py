@@ -2,7 +2,7 @@
 from music21 import configure, stream, meter, key, note, clef
 
 
-MAX_HORIZONTAL_DISTANCE = 256
+MAX_HORIZONTAL_DISTANCE = 64
 
 TREBLE_SYMBOL = "treble"
 BASS_SYMBOL = "bass"
@@ -11,13 +11,13 @@ FLAT_SYMBOL = "flat"
 SHARP_SYMBOL = "sharp"
 NATURAL_SYMBOL = "natual"
 
-TIME_CUT_SYMBOL = "22"
-TIME_C_CYMBOL = "44c"
-TIME_24_SYMBOL = "24"
-TIME_34_SYMBOL = "34"
-TIME_38_SYMBOL = "38"
-TIME_44_SYMBOL = "44"
-TIME_68_SYMBOL = "68"
+TIME_CUT_SYMBOL = "2/2c time"
+TIME_C_CYMBOL = "4/4c time"
+TIME_24_SYMBOL = "2/4 time"
+TIME_34_SYMBOL = "3/4 time"
+TIME_38_SYMBOL = "3/8 time"
+TIME_44_SYMBOL = "4/4 time"
+TIME_68_SYMBOL = "6/8 time"
 
 TIME_SYMBOLS = [
     TIME_CUT_SYMBOL,
@@ -52,12 +52,14 @@ def export(bars, outputFormat, outputName):
         for i in range(index, len(bar)):
             accidental = ""
 
-            if isAccidental(bar[i]):
-                accidental = SYMBOL_DICTIONARY[bar[i][1]]
+            symbol = str(bar[i][1])
+            if isAccidental(symbol):
+                accidental = SYMBOL_DICTIONARY[symbol]
             else:
                 tmp = None
-                symbol = str(bar[i][1])
+
                 if symbol.count("note") > 0:
+                    print("note")
                     if symbol.count("whole") > 0:
                         tmp = note.Note(getNotePitch(bar[i][0], accidental), type="whole")
                     elif symbol.count("half") > 0:
@@ -67,8 +69,11 @@ def export(bars, outputFormat, outputName):
                     elif symbol.count("eighth") > 0:
                         tmp = note.Note(getNotePitch(bar[i][0], accidental), type="eighth")
                     elif symbol.count("sixteen") > 0:
-                        tmp = note.Note(getNotePitch(bar[i][0], accidental), type="sixteen")
+                        tmp = note.Note(getNotePitch(bar[i][0], accidental), type="16th")
+
+                    measure.append(tmp)
                 elif symbol.count("rest") > 0:
+                    print("rest")
                     if symbol.count("whole") > 0:
                         tmp = note.Rest("whole")
                     elif symbol.count("half") > 0:
@@ -78,9 +83,9 @@ def export(bars, outputFormat, outputName):
                     elif symbol.count("eighth") > 0:
                         tmp = note.Rest("eighth")
                     elif symbol.count("sixteen") > 0:
-                        tmp = note.Rest("sixteen")
-                    
-                measure.append(tmp)
+                        tmp = note.Rest("16th")
+
+                    measure.append(tmp)
         
         return measure
 
@@ -90,30 +95,58 @@ def export(bars, outputFormat, outputName):
 
     
     def checkStart(bar):
+        def isKey(accidental, next):
+            if isAccidental(next[1]) or isTime(next[1]):
+                return True
+            
+            print(str(next[0][0] - accidental[0][0]))
+            if next[0][0] - accidental[0][0] < MAX_HORIZONTAL_DISTANCE:
+                return False
+            
+            return True
+
+
         newClef = None
         newKey = 0
+        keyChange = False
         newTime = None
 
         for i in range(0, len(bar)):
             if isClef(bar[i][1]):
+                print("clef")
                 newClef = SYMBOL_DICTIONARY[bar[i][1]]
             elif isAccidental(bar[i][1]):
-                if bar[i][1] == FLAT_SYMBOL and newKey <= 0 and bar[0][0][0] - bar[i][0][0] < MAX_HORIZONTAL_DISTANCE:
-                    newKey -= 1
-                elif bar[i][1] == SHARP_SYMBOL and newKey >= 0 and bar[0][0][0] - bar[i][0][0] < MAX_HORIZONTAL_DISTANCE:
-                    newKey += 1
+                print("accidental")
+                if isKey(bar[i], bar[i + 1]):
+                    keyChange = True
+
+                    if bar[i][1] == FLAT_SYMBOL:
+                        newKey -= 1
+                    elif bar[i][1] == SHARP_SYMBOL:
+                        newKey += 1
                 else:
-                    newKey = key.KeySignature(newKey)
+                    if keyChange:
+                        newKey = key.KeySignature(newKey)
+                    else:
+                        newKey = None
 
                     return newClef, newKey, newTime, i
             elif isTime(bar[i][1]):
+                print("time")
                 newTime = SYMBOL_DICTIONARY[bar[i][1]]
 
-                newKey = key.KeySignature(newKey)
+                if keyChange:
+                    newKey = key.KeySignature(newKey)
+                else:
+                    newKey = None
 
                 return newClef, newKey, newTime, i + 1
             else:
-                newKey = key.KeySignature(newKey)
+                print("done start")
+                if keyChange:
+                    newKey = key.KeySignature(newKey)
+                else:
+                    newKey = None
 
                 return newClef, newKey, newTime, i
             
@@ -133,38 +166,39 @@ def export(bars, outputFormat, outputName):
 
 
     def isTime(symbolName):
-        if TIME_SYMBOLS.__contains__(symbolName):
+        if TIME_SYMBOLS.count(symbolName) > 0:
             return True
         return False
     
 
     part = stream.Part()
-    lastClef = None
-    lastKey = None
-    lastTime = None
 
-    lastClef, lastKey, lastTime, index = checkStart(bars[0])
-    part.append(lastClef)
-    part.append(lastKey)
-    part.append(lastTime)
+    lastClef = None
+    newClef = None
+
+    lastKey = None
+    newKey = None
+
+    lastTime = None
+    newTime = None
 
     for bar in bars:
         newClef, newKey, newTime, index = checkStart(bar)
         measure = getMeasure(bar, index)
 
         if newClef != None and newClef != lastClef:
-            measure.append(newClef)
+            measure.clef = newClef
             lastClef = newClef
 
         if newKey != None and newKey != lastKey:
-            measure.append(newKey)
+            measure.keySignature = newKey
             lastKey = newKey
 
         if newTime != None and newTime != lastTime:
-            measure.append(newTime)
+            measure.timeSignature = newTime
             lastTime = newTime
 
-        part.append(measure)
+        part.append(measure)        
 
     score = stream.Score()
     score.append(part)

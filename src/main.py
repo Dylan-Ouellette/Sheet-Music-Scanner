@@ -7,6 +7,7 @@ from node_recognition_output import note_recognition
 from Structure_Data import Structure_Data
 from remove_detect_line import detectionLine
 from Determine_Note import Determine_Note
+from export_mxl import export
 import cv2 as cv
 
 def removeLine(image, value, output):
@@ -49,6 +50,8 @@ def main():
 
     structured_notation_list = Structure_Data((treble_list + bass_list + notation_list), barbox_list)
     structured_notation_list = Determine_Note(line_list, structured_notation_list, img_gray, 0.70)
+
+    export(structured_notation_list, "musicxml", "./data/music-xmls/TempTest.mxl")
 
     return 0
 
