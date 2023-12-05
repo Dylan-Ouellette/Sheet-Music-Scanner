@@ -6,6 +6,11 @@ def checkDistance(coordinates, new_coordinate, min_distance):
             return False
     return True
 
+def checkDistance_point(coordinate1, coordinate2, min_distance):
+     if math.dist(coordinate1, coordinate2) < min_distance:
+          return False
+     return True
+
 def checkCollision_List (pt, pt_w, pt_h, list, list_element_w, list_element_h):
     for element_pt in list:
         if (

@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
-from Classification_Functions import checkDistance, checkCollision_List
+from Classification_Functions import checkDistance, checkDistance_point, checkCollision_List
+from remove_detect_line import detectionLine
 
 def match_template_and_store(output_list, image_path, templates, name, threshold):
     img_rgb = cv.imread(image_path)
@@ -85,15 +86,28 @@ def accidentals(input_image):# 'FinalImage.png'
   match_no_collision_check(accidental_list, input_image, ['./data/templates/natual.png'], 'natual', 0.7) #threshold = 0.7-0.8
   return accidental_list
 
-"""#rests
+"""#rests"""
 
+def rests(line_list, input_image):# 'FinalImage.png'
 
-
-"""
-
-def rests(input_image):# 'FinalImage.png'
   rest_list = []
   match_template_and_store(rest_list, input_image, ['./data/templates/whole half rest.png'], 'whole half rest', 0.9) #threshold = 0.8-0.95
+
+  #differentiate between whole rests and half rests
+  newList = []
+  for WholeHalf_rest in rest_list:
+    WholeHalf_rest = list(WholeHalf_rest)
+    for staff in line_list:
+        #check if rest is in close proximity to line, add 20 to adjust for template
+        if not checkDistance_point((WholeHalf_rest[0][0], staff[1][1]), (WholeHalf_rest[0][0], WholeHalf_rest[0][1] + 20), 50):
+            #check if rest is touching line
+            if not checkDistance_point((WholeHalf_rest[0][0], staff[1][1]), (WholeHalf_rest[0][0], WholeHalf_rest[0][1] + 20), 5):
+              WholeHalf_rest[1] = "whole rest"
+            else:
+              WholeHalf_rest[1] = "half rest"
+    newList.append(tuple(WholeHalf_rest))    
+  rest_list = newList   
+
   match_template_and_store(rest_list, input_image, ['./data/templates/quarter rest.png'], 'quarter rest', 0.7) #threshold = 0.6-0.9
   match_template_and_store(rest_list, input_image, ['./data/templates/eighth rest.png'], 'eighth rest', 0.82) #threshold = 0.7-0.9
   match_no_collision_check(rest_list, input_image, ['./data/templates/sixteenth rest.png'], 'sixteenth rest', 0.7) #threshold = 0.7-0.9
@@ -116,12 +130,12 @@ def notes(input_image):# 'FinalImage.png'
 
 """#note_recognition output"""
 
-def note_recognition(input_image):# 'FinalImage.png'
+def note_recognition(line_list, input_image):# 'FinalImage.png'
   note_recognition_result = []
   time_signiture_list = time_signiture(input_image)
   #clef_list = clefs(input_image)
   accidental_list = accidentals(input_image)
-  rest_list = rests(input_image)
+  rest_list = rests(line_list, input_image)
   note_list = notes(input_image)
 
   note_recognition_result.extend(time_signiture_list)
