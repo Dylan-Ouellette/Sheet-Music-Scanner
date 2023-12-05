@@ -59,13 +59,13 @@ def match_no_collision_check(output_list, image_path, template_names, name, thre
 
 def time_signiture(input_image):# 'FinalImage.png'
   time_signiture_list = []
-  match_template_and_store(time_signiture_list, input_image, ['./data/templates/44c.png'], '4/4c time', 0.95) #threshold = 0.9-0.95
-  match_template_and_store(time_signiture_list, input_image, ['./data/templates/22.png'], '2/2c time', 0.95) #threshold = 0.8-0.9
-  match_template_and_store(time_signiture_list, input_image, ['./data/templates/24.png'], '2/4 time', 0.95) #threshold = 0.9-0.95
-  match_template_and_store(time_signiture_list, input_image, ['./data/templates/34.png'], '3/4 time', 0.95) #threshold = 0.9-0.95
-  match_template_and_store(time_signiture_list, input_image, ['./data/templates/38.png'], '3/8 time', 0.95) #threshold = 0.9-0.95
-  match_template_and_store(time_signiture_list, input_image, ['./data/templates/44.png'], '4/4 time', 0.9) #threshold = 0.8-0.95
-  match_template_and_store(time_signiture_list, input_image, ['./data/templates/68.png'], '6/8 time', 0.9) #threshold = 0.8-0.95
+  match_template_and_store(time_signiture_list, input_image, ['./data/templates/44c.png'], '4/4c time', 0.85) #threshold = 0.9-0.95
+  match_template_and_store(time_signiture_list, input_image, ['./data/templates/22.png'], '2/2c time', 0.85) #threshold = 0.8-0.9
+  match_template_and_store(time_signiture_list, input_image, ['./data/templates/24.png'], '2/4 time', 0.85) #threshold = 0.9-0.95
+  match_template_and_store(time_signiture_list, input_image, ['./data/templates/34.png'], '3/4 time', 0.85) #threshold = 0.9-0.95
+  match_template_and_store(time_signiture_list, input_image, ['./data/templates/38.png'], '3/8 time', 0.85) #threshold = 0.9-0.95
+  match_template_and_store(time_signiture_list, input_image, ['./data/templates/44.png'], '4/4 time', 0.85) #threshold = 0.8-0.95
+  match_template_and_store(time_signiture_list, input_image, ['./data/templates/68.png'], '6/8 time', 0.85) #threshold = 0.8-0.95
   return time_signiture_list
 
 """# clefs"""
@@ -95,7 +95,7 @@ def rests(input_image):# 'FinalImage.png'
   rest_list = []
   match_template_and_store(rest_list, input_image, ['./data/templates/whole half rest.png'], 'whole half rest', 0.9) #threshold = 0.8-0.95
   match_template_and_store(rest_list, input_image, ['./data/templates/quarter rest.png'], 'quarter rest', 0.7) #threshold = 0.6-0.9
-  match_template_and_store(rest_list, input_image, ['./data/templates/eighth rest.png'], 'eighth rest', 0.7) #threshold = 0.7-0.9
+  match_template_and_store(rest_list, input_image, ['./data/templates/eighth rest.png'], 'eighth rest', 0.82) #threshold = 0.7-0.9
   match_no_collision_check(rest_list, input_image, ['./data/templates/sixteenth rest.png'], 'sixteenth rest', 0.7) #threshold = 0.7-0.9
   return rest_list
 
@@ -103,12 +103,15 @@ def rests(input_image):# 'FinalImage.png'
 
 def notes(input_image):# 'FinalImage.png'
   note_list = []
-  match_template_and_store(note_list, input_image, ['./data/templates/whole note.png'], 'whole note', 0.7) #threshold = 0.7-0.9
-  match_template_and_store(note_list, input_image, ['./data/templates/half note.png'], 'half note', 0.8) #threshold = 0.8-0.85
-  match_template_and_store(note_list, input_image, ['./data/templates/quarter note1.png', './data/templates/quarter note2.png'], 'quarter note', 0.9) #threshold = 0.9
+  match_template_and_store(note_list, input_image, ['./data/templates/sixteen note.png'], 'sixteen note', 0.80)
+  match_template_and_store(note_list, input_image, ['./data/templates/sixteen note1l.png', './data/templates/sixteen note1r.png', './data/templates/sixteen note2l.png', './data/templates/sixteen note2r.png'], 'sixteen note', 0.74) #threshold = 0.7
+  match_template_and_store(note_list, input_image, ['./data/templates/eighth note.png'], 'eighth note', 0.80)
+  match_template_and_store(note_list, input_image, ['./data/templates/eighth note1l.png', './data/templates/eighth note1r.png', './data/templates/eighth note2l.png', './data/templates/eighth note2r.png'], 'eighth note', 0.83) #threshold = 0.8
 
-  match_template_and_store(note_list, input_image, ['./data/templates/eighth note1l.png', './data/templates/eighth note1r.png', './data/templates/eighth note2l.png', './data/templates/eighth note2r.png','./data/templates/eighth note.png'], 'eighth note', 0.8) #threshold = 0.8
-  match_template_and_store(note_list, input_image, ['./data/templates/sixteen note1l.png', './data/templates/sixteen note1r.png', './data/templates/sixteen note2l.png', './data/templates/sixteen note2r.png','./data/templates/sixteen note.png'], 'sixteen note', 0.7) #threshold = 0.7
+  match_template_and_store(note_list, input_image, ['./data/templates/whole note.png'], 'whole note', 0.7) #threshold = 0.7-0.9
+  match_template_and_store(note_list, input_image, ['./data/templates/half note.png'], 'half note', 0.75) #threshold = 0.8-0.85
+  match_template_and_store(note_list, input_image, ['./data/templates/quarter note1.png', './data/templates/quarter note2.png'], 'quarter note', 0.85) #threshold = 0.9
+
   return note_list
 
 """#note_recognition output"""
