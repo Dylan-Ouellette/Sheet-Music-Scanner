@@ -19,12 +19,13 @@ def Treble_Classification(img_gray, img_rgb, template_file, threshold):
     page_length, page_width = img_gray.shape
 
     #removes top part of page above the first treble clef to remove classification of title
-    for y in range(page_length):
-            for x in range(page_width):
-                # Check if the pixel is above the specified y-coordinate
-                if y < treble_pt_list[0][1] - 30:
-                    # Set pixel color to white (255, 255, 255)
-                    img_gray[y, x] = 255
+    if treble_pt_list:
+        for y in range(page_length):
+                for x in range(page_width):
+                    # Check if the pixel is above the specified y-coordinate
+                    if y < treble_pt_list[0][1] - 30:
+                        # Set pixel color to white (255, 255, 255)
+                        img_gray[y, x] = 255
     
     treble_list = []
     for treble_pt in treble_pt_list:
