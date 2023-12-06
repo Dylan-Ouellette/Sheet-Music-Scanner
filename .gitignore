@@ -5,6 +5,8 @@
 
 # Test Results
 test*.png
+removeLineOutput.png
+rescaleOutput.png
 
 # VVV TEMPLATE FOR PYTHON PROJECTS VVV
 

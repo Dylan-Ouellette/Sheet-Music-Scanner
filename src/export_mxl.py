@@ -45,15 +45,15 @@ SYMBOL_DICTIONARY = {
 }
 
 BASS_CONVERSION = {
-    "G5": "B4",
-    "F5": "A4",
+    "G5": "B3",
+    "F5": "A3",
     "E5": "G3",
     "D5": "F3",
     "C5": "E3",
-    "B5": "D3",
-    "A5": "C3",
-    "G4": "B3",
-    "F4": "A3",
+    "B4": "D3",
+    "A4": "C3",
+    "G4": "B2",
+    "F4": "A2",
     "E4": "G2",
     "D4": "F2"
 }
@@ -74,8 +74,14 @@ def export(bars, outputFormat, outputPath, outputTitle):
             measure.timeSignature = barTime
 
         numSharps = barKey._getSharps()
-        barKey = ORDER_OF_SHARPS[0:numSharps]
         barAccidentals = {}
+
+        if numSharps > 0:
+            barKey = ORDER_OF_SHARPS[0:numSharps]
+        elif numSharps < 0:
+            barKey = ORDER_OF_SHARPS[numSharps:7]
+        else:
+            barKey = []
 
         if numSharps >= 0:
             symbolType = "#"

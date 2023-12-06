@@ -27,7 +27,7 @@ def CreateBarBoxes (treble_list, bass_list, BarLine_list, BarLine_w, BarLine_h, 
         staff_clef_lines = []
         staff_clef_lines.append(clef_pt)
         for line_pt in barline_pt_list:
-            if abs(clef_pt[1] - line_pt[1]) < 100:
+            if abs(clef_pt[1] - line_pt[1]) < 200:
                 a += 1
                 staff_clef_lines.append(line_pt)
         

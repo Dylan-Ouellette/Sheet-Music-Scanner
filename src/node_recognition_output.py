@@ -81,9 +81,9 @@ def clefs(input_image):# 'FinalImage.png'
 
 def accidentals(input_image):# 'FinalImage.png'
   accidental_list = []
-  match_no_collision_check(accidental_list, input_image, ['./data/templates/sharp.png'], 'sharp', 0.7) #threshold = 0.6-0.7
-  match_no_collision_check(accidental_list, input_image, ['./data/templates/flat.png'], 'flat', 0.7) #threshold = 0.6-0.7
-  match_no_collision_check(accidental_list, input_image, ['./data/templates/natual.png'], 'natual', 0.7) #threshold = 0.7-0.8
+  match_template_and_store(accidental_list, input_image, ['./data/templates/sharp.png'], 'sharp', 0.7) #threshold = 0.6-0.7
+  match_template_and_store(accidental_list, input_image, ['./data/templates/flat.png'], 'flat', 0.7) #threshold = 0.6-0.7
+  match_template_and_store(accidental_list, input_image, ['./data/templates/natual.png'], 'natual', 0.7) #threshold = 0.7-0.8
   return accidental_list
 
 """#rests"""
