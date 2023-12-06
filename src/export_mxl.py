@@ -167,7 +167,7 @@ def export(bars, outputFormat, outputPath, outputTitle):
             if isClef(bar[i][1]):
                 newClef = SYMBOL_DICTIONARY[bar[i][1]]
             elif isAccidental(bar[i][1]):
-                if isKey(bar[i], bar[i + 1]):
+                if i + 1 == len(bar) or isKey(bar[i], bar[i + 1]):
                     keyChange = True
 
                     if bar[i][1] == FLAT_SYMBOL:
@@ -198,7 +198,7 @@ def export(bars, outputFormat, outputPath, outputTitle):
 
                 return newClef, newKey, newTime, i
             
-        return newClef, newKey, newTime, 0
+        return newClef, newKey, newTime, len(bar)
 
 
     def isClef(symbolName):
@@ -234,10 +234,6 @@ def export(bars, outputFormat, outputPath, outputTitle):
     changeTime = False
 
     for bar in bars:
-        changeClef = False
-        changeKey = False
-        changeTime = False
-
         newClef, newKey, newTime, index = checkStart(bar)
 
         if newClef != None and newClef != lastClef:
@@ -252,9 +248,14 @@ def export(bars, outputFormat, outputPath, outputTitle):
             changeTime = True
             lastTime = newTime
 
-        measure = getMeasure(bar, index, lastClef, lastKey, lastTime, changeClef, changeKey, changeTime)
+        if index != len(bar):
+            measure = getMeasure(bar, index, lastClef, lastKey, lastTime, changeClef, changeKey, changeTime)
 
-        part.append(measure)
+            part.append(measure)
+
+            changeClef = False
+            changeKey = False
+            changeTime = False
 
     score = stream.Score()
     score.metadata = metadata.Metadata(title=outputTitle, composer="")
