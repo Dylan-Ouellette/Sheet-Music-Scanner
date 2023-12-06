@@ -15,17 +15,6 @@ def Treble_Classification(img_gray, img_rgb, template_file, threshold):
         if checkDistance(treble_pt_list, pt, 50):
             treble_pt_list.append(pt)
             cv.rectangle(img_rgb, pt, (pt[0] + treble_w, pt[1] + treble_h), (0,255,0), 2)
-
-    page_length, page_width = img_gray.shape
-
-    #removes top part of page above the first treble clef to remove classification of title
-    if treble_pt_list:
-        for y in range(page_length):
-                for x in range(page_width):
-                    # Check if the pixel is above the specified y-coordinate
-                    if y < treble_pt_list[0][1] - 30:
-                        # Set pixel color to white (255, 255, 255)
-                        img_gray[y, x] = 255
     
     treble_list = []
     for treble_pt in treble_pt_list:
