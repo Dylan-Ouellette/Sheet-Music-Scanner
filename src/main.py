@@ -1,3 +1,4 @@
+
 from find_scale import scaleImage
 from Treble_Classification import Treble_Classification
 from Bass_Classification import Bass_Classification
@@ -10,6 +11,7 @@ from Determine_Note import Determine_Note
 from export_mxl import export
 import cv2 as cv
 
+
 def removeLine(image, value, output):
     img = image
     val = value
@@ -20,6 +22,7 @@ def removeLine(image, value, output):
     vertical = cv.morphologyEx(threshold_gray, cv.MORPH_OPEN, vertical_kernel)
     vertical_inverted = cv.bitwise_not(vertical)
     cv.imwrite(output, vertical_inverted)
+
 
 def main():
     testImage = "./data/images/TempTestSheet.png"
@@ -51,7 +54,7 @@ def main():
     structured_notation_list = Structure_Data((treble_list + bass_list + notation_list), barbox_list)
     structured_notation_list = Determine_Note(line_list, structured_notation_list, img_gray, 0.70)
 
-    export(structured_notation_list, "musicxml", "./data/music-xmls/TempTest.mxl")
+    export(structured_notation_list, "musicxml", "./data/music-xmls/output.mxl", "Title")
 
     return 0
 

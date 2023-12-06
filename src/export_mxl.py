@@ -1,5 +1,5 @@
 
-from music21 import configure, stream, meter, key, note, clef
+from music21 import stream, metadata, meter, key, note, clef
 
 
 MAX_HORIZONTAL_DISTANCE = 64
@@ -44,54 +44,92 @@ SYMBOL_DICTIONARY = {
     TIME_68_SYMBOL: meter.TimeSignature("6/8")
 }
 
+BASS_CONVERSION = {
+    "G5": "B4",
+    "F5": "A4",
+    "E5": "G3",
+    "D5": "F3",
+    "C5": "E3",
+    "B5": "D3",
+    "A5": "C3",
+    "G4": "B3",
+    "F4": "A3",
+    "E4": "G2",
+    "D4": "F2"
+}
 
-def export(bars, outputFormat, outputName):
-    def getMeasure(bar, index):
+ORDER_OF_SHARPS = ["F", "C", "G", "D", "A", "E", "B"]
+
+def export(bars, outputFormat, outputPath, outputTitle):
+    def getMeasure(bar, index, barClef, barKey):
         measure = stream.Measure()
 
-        for i in range(index, len(bar)):
-            accidental = ""
+        numSharps = barKey._getSharps()
+        barKey = ORDER_OF_SHARPS[0:numSharps]
+        barAccidentals = {}
 
+        if numSharps >= 0:
+            symbolType = "#"
+        else:
+            symbolType = "b"
+
+        for accidental in barKey:
+            barAccidentals.update({accidental: accidental + symbolType})
+
+        accidental = None
+
+        for i in range(index, len(bar)):
             symbol = str(bar[i][1])
+
             if isAccidental(symbol):
                 accidental = SYMBOL_DICTIONARY[symbol]
             else:
-                tmp = None
+                newNote = None
 
                 if symbol.count("note") > 0:
-                    print("note")
-                    if symbol.count("whole") > 0:
-                        tmp = note.Note(getNotePitch(bar[i][0], accidental), type="whole")
-                    elif symbol.count("half") > 0:
-                        tmp = note.Note(getNotePitch(bar[i][0], accidental), type="half")
-                    elif symbol.count("quarter") > 0:
-                        tmp = note.Note(getNotePitch(bar[i][0], accidental), type="quarter")
-                    elif symbol.count("eighth") > 0:
-                        tmp = note.Note(getNotePitch(bar[i][0], accidental), type="eighth")
-                    elif symbol.count("sixteen") > 0:
-                        tmp = note.Note(getNotePitch(bar[i][0], accidental), type="16th")
+                    pitch = str(bar[i][3])
 
-                    measure.append(tmp)
+                    if barClef == clef.BassClef():
+                        pitch = BASS_CONVERSION[pitch]
+
+                    if accidental != None:
+                        if accidental == "":
+                            barAccidentals.pop(pitch[0], False)
+                        else:
+                            barAccidentals.update({pitch[0]: pitch[0] + accidental})
+                    
+                    if barAccidentals.keys().__contains__(pitch[0]):
+                        pitch = barAccidentals[pitch[0]] + pitch[1] 
+
+                    if symbol.count("whole") > 0:
+                        newNote = note.Note(pitch, type="whole")
+                    elif symbol.count("half") > 0:
+                        newNote = note.Note(pitch, type="half")
+                    elif symbol.count("quarter") > 0:
+                        newNote = note.Note(pitch, type="quarter")
+                    elif symbol.count("eighth") > 0:
+                        newNote = note.Note(pitch, type="eighth")
+                    elif symbol.count("sixteen") > 0:
+                        newNote = note.Note(pitch, type="16th")
+
+                    measure.append(newNote)
                 elif symbol.count("rest") > 0:
-                    print("rest")
                     if symbol.count("whole") > 0:
-                        tmp = note.Rest("whole")
+                        newNote = note.Rest("whole")
                     elif symbol.count("half") > 0:
-                        tmp = note.Rest("half")
+                        newNote = note.Rest("half")
                     elif symbol.count("quarter") > 0:
-                        tmp = note.Rest("quarter")
+                        newNote = note.Rest("quarter")
                     elif symbol.count("eighth") > 0:
-                        tmp = note.Rest("eighth")
+                        newNote = note.Rest("eighth")
                     elif symbol.count("sixteen") > 0:
-                        tmp = note.Rest("16th")
+                        newNote = note.Rest("16th")
 
-                    measure.append(tmp)
+                    measure.append(newNote)
+
+                accidental = None
         
         return measure
-
-
-    def getNotePitch(pos, accidental=""):
-        return "C" + accidental + "4" # TODO replace
 
     
     def checkStart(bar):
@@ -99,7 +137,6 @@ def export(bars, outputFormat, outputName):
             if isAccidental(next[1]) or isTime(next[1]):
                 return True
             
-            print(str(next[0][0] - accidental[0][0]))
             if next[0][0] - accidental[0][0] < MAX_HORIZONTAL_DISTANCE:
                 return False
             
@@ -113,10 +150,8 @@ def export(bars, outputFormat, outputName):
 
         for i in range(0, len(bar)):
             if isClef(bar[i][1]):
-                print("clef")
                 newClef = SYMBOL_DICTIONARY[bar[i][1]]
             elif isAccidental(bar[i][1]):
-                print("accidental")
                 if isKey(bar[i], bar[i + 1]):
                     keyChange = True
 
@@ -132,7 +167,6 @@ def export(bars, outputFormat, outputName):
 
                     return newClef, newKey, newTime, i
             elif isTime(bar[i][1]):
-                print("time")
                 newTime = SYMBOL_DICTIONARY[bar[i][1]]
 
                 if keyChange:
@@ -142,7 +176,6 @@ def export(bars, outputFormat, outputName):
 
                 return newClef, newKey, newTime, i + 1
             else:
-                print("done start")
                 if keyChange:
                     newKey = key.KeySignature(newKey)
                 else:
@@ -175,39 +208,46 @@ def export(bars, outputFormat, outputName):
 
     lastClef = None
     newClef = None
+    changeClef = False
 
     lastKey = None
     newKey = None
+    changeKey = False
 
     lastTime = None
     newTime = None
 
     for bar in bars:
         newClef, newKey, newTime, index = checkStart(bar)
-        measure = getMeasure(bar, index)
 
         if newClef != None and newClef != lastClef:
-            measure.clef = newClef
+            changeClef = True
             lastClef = newClef
 
         if newKey != None and newKey != lastKey:
-            measure.keySignature = newKey
+            changeKey = True
             lastKey = newKey
 
         if newTime != None and newTime != lastTime:
-            measure.timeSignature = newTime
             lastTime = newTime
 
-        part.append(measure)        
+        measure = getMeasure(bar, index, lastClef, lastKey)
+
+        if changeClef:
+            changeClef = False
+            measure.clef = newClef
+
+        if changeKey:
+            changeKey = False
+            measure.keySignature = newKey
+
+        if newTime == lastTime:
+            measure.timeSignature = newTime
+
+        part.append(measure)
 
     score = stream.Score()
+    score.metadata = metadata.Metadata(title=outputTitle, composer="")
     score.append(part)
-    score.write(fmt=outputFormat, fp=outputName)
+    score.write(fmt=outputFormat, fp=outputPath)
 
-
-def main():
-    pass
-
-
-if __name__ == '__main__':
-    main()
