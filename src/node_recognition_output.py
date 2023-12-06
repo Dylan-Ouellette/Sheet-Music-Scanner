@@ -60,7 +60,7 @@ def match_no_collision_check(output_list, image_path, template_names, name, thre
 
 def time_signiture(input_image):# 'FinalImage.png'
   time_signiture_list = []
-  match_template_and_store(time_signiture_list, input_image, ['./data/templates/44c.png'], '4/4c time', 0.85) #threshold = 0.9-0.95
+  match_template_and_store(time_signiture_list, input_image, ['./data/templates/44c.png'], '4/4c time', 0.80) #threshold = 0.9-0.95
   match_template_and_store(time_signiture_list, input_image, ['./data/templates/22.png'], '2/2c time', 0.85) #threshold = 0.8-0.9
   match_template_and_store(time_signiture_list, input_image, ['./data/templates/24.png'], '2/4 time', 0.85) #threshold = 0.9-0.95
   match_template_and_store(time_signiture_list, input_image, ['./data/templates/34.png'], '3/4 time', 0.85) #threshold = 0.9-0.95

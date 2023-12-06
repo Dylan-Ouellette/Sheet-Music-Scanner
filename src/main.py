@@ -1,3 +1,5 @@
+
+import sys
 from find_scale import scaleImage
 from Treble_Classification import Treble_Classification
 from Bass_Classification import Bass_Classification
@@ -7,7 +9,9 @@ from node_recognition_output import note_recognition
 from Structure_Data import Structure_Data
 from remove_detect_line import detectionLine
 from Determine_Note import Determine_Note
+from export_mxl import export
 import cv2 as cv
+
 
 def removeLine(image, value, output):
     img = image
@@ -20,10 +24,9 @@ def removeLine(image, value, output):
     vertical_inverted = cv.bitwise_not(vertical)
     cv.imwrite(output, vertical_inverted)
 
-def main():
-    testImage = "./data/images/TempTestSheet.png"
-    
-    scaleImage(testImage, "./data/images/rescaleOutput.png")
+
+def main(imagePath, outputName):    
+    scaleImage(imagePath, "./data/images/rescaleOutput.png")
     
     removeLine(cv.imread('./data/images/rescaleOutput.png'), 10, './data/images/removeLineOutput.png')
 
@@ -38,7 +41,7 @@ def main():
 
     barbox_list = CreateBarBoxes(treble_list, bass_list, barline_list, barline_w, barline_h, img_gray, img_rgb)
 
-    line_list = detectionLine(testImage, "./data/templates/staff line.png", 0.9)
+    line_list = detectionLine("./data/images/rescaleOutput.png", "./data/templates/staff line.png", 0.9)
     notation_list = note_recognition(line_list, './data/images/removeLineOutput.png')
 
     for element in notation_list:
@@ -50,8 +53,10 @@ def main():
     structured_notation_list = Structure_Data((treble_list + bass_list + notation_list), barbox_list)
     structured_notation_list = Determine_Note(line_list, structured_notation_list, img_gray, 0.70)
 
+    export(structured_notation_list, "musicxml", "./data/music-xmls/" + outputName + ".mxl", outputName)
+
     return 0
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1], sys.argv[2])
