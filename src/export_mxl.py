@@ -61,8 +61,17 @@ BASS_CONVERSION = {
 ORDER_OF_SHARPS = ["F", "C", "G", "D", "A", "E", "B"]
 
 def export(bars, outputFormat, outputPath, outputTitle):
-    def getMeasure(bar, index, barClef, barKey):
+    def getMeasure(bar, index, barClef, barKey, barTime, changeClef, changeKey, changeTime):
         measure = stream.Measure()
+
+        if changeClef:
+            measure.clef = barClef
+
+        if changeKey:
+            measure.keySignature = barKey
+
+        if changeTime:
+            measure.timeSignature = barTime
 
         numSharps = barKey._getSharps()
         barKey = ORDER_OF_SHARPS[0:numSharps]
@@ -115,15 +124,15 @@ def export(bars, outputFormat, outputPath, outputTitle):
                     measure.append(newNote)
                 elif symbol.count("rest") > 0:
                     if symbol.count("whole") > 0:
-                        newNote = note.Rest("whole")
+                        newNote = note.Rest(quarterLength=(barTime.beatDuration.quarterLength * barTime.beatCount))
                     elif symbol.count("half") > 0:
-                        newNote = note.Rest("half")
+                        newNote = note.Rest(quarterLength=(barTime.beatDuration.quarterLength * barTime.beatCount / 2))
                     elif symbol.count("quarter") > 0:
-                        newNote = note.Rest("quarter")
+                        newNote = note.Rest(quarterLength=(barTime.beatDuration.quarterLength * barTime.beatCount / 4))
                     elif symbol.count("eighth") > 0:
-                        newNote = note.Rest("eighth")
+                        newNote = note.Rest(quarterLength=(barTime.beatDuration.quarterLength * barTime.beatCount / 8))
                     elif symbol.count("sixteen") > 0:
-                        newNote = note.Rest("16th")
+                        newNote = note.Rest(quarterLength=(barTime.beatDuration.quarterLength * barTime.beatCount / 16))
 
                     measure.append(newNote)
 
@@ -216,8 +225,13 @@ def export(bars, outputFormat, outputPath, outputTitle):
 
     lastTime = None
     newTime = None
+    changeTime = False
 
     for bar in bars:
+        changeClef = False
+        changeKey = False
+        changeTime = False
+
         newClef, newKey, newTime, index = checkStart(bar)
 
         if newClef != None and newClef != lastClef:
@@ -229,20 +243,10 @@ def export(bars, outputFormat, outputPath, outputTitle):
             lastKey = newKey
 
         if newTime != None and newTime != lastTime:
+            changeTime = True
             lastTime = newTime
 
-        measure = getMeasure(bar, index, lastClef, lastKey)
-
-        if changeClef:
-            changeClef = False
-            measure.clef = newClef
-
-        if changeKey:
-            changeKey = False
-            measure.keySignature = newKey
-
-        if newTime == lastTime:
-            measure.timeSignature = newTime
+        measure = getMeasure(bar, index, lastClef, lastKey, lastTime, changeClef, changeKey, changeTime)
 
         part.append(measure)
 
