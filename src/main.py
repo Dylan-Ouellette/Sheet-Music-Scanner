@@ -6,6 +6,7 @@ from CreateBarBoxes import CreateBarBoxes
 from node_recognition_output import note_recognition
 from Structure_Data import Structure_Data
 from remove_detect_line import detectionLine
+from Determine_Note import Determine_Note
 import cv2 as cv
 
 def removeLine(image, value, output):
@@ -37,7 +38,7 @@ def main():
 
     barbox_list = CreateBarBoxes(treble_list, bass_list, barline_list, barline_w, barline_h, img_gray, img_rgb)
 
-    line_list = detectionLine("./data/images/TempTestSheet.png", "./data/templates/staff line.png", 0.9)
+    line_list = detectionLine(testImage, "./data/templates/staff line.png", 0.9)
     notation_list = note_recognition(line_list, './data/images/removeLineOutput.png')
 
     for element in notation_list:
@@ -47,6 +48,7 @@ def main():
     cv.imwrite('./data/images/testOutput.png', img_rgb)
 
     structured_notation_list = Structure_Data((treble_list + bass_list + notation_list), barbox_list)
+    structured_notation_list = Determine_Note(line_list, structured_notation_list, img_gray, 0.70)
 
     return 0
 
