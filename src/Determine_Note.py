@@ -66,7 +66,7 @@ def Determine_Note(line_list, structured_notation_list, image, threshold):
             elif (notation[1] == "whole note"):
                 
                 #location of body_loc is on top left of body
-                body_loc = (notation[0][0], (notation[0][1] + 13))
+                body_loc = (notation[0][0], (notation[0][1] + 8))
 
                 note = musical_note(body_loc, line_list, 7)
                 notation.append(note)
@@ -76,7 +76,7 @@ def Determine_Note(line_list, structured_notation_list, image, threshold):
             elif (notation[1] == "half note"):
 
                 #location of body_loc is on top left of body
-                body_loc = (notation[0][0], (notation[0][1] + 8))
+                body_loc = (notation[0][0], (notation[0][1] + 11))
 
                 note = musical_note(body_loc, line_list, 7)
                 notation.append(note)
