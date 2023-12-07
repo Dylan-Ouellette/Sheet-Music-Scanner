@@ -91,9 +91,6 @@ def scaleImage(inputFile, outputFile = "", target = 166):
         scale = getStaffScale(hSum, factor)
         factor += 0.1
 
-    print("factor: ",factor)
-    print("scale: ", scale)
-
     if not (scale == target or scale + 1 == target or scale - 1 == target):
         size = newImageSize(scale, img)
         ret = cv.resize(img, size, interpolation= cv.INTER_AREA)
