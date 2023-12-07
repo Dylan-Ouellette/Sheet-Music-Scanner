@@ -20,3 +20,7 @@ The output file will be located under the `data/music-xmls/` dir, and will be na
  - `rescaleOutput.png`
  - `removeLineOutput.png`
  - `testOutput.png`
+
+### Provided Examples
+
+Two examples are provided each with a 600dpi and 450dpi png stored under the `data/images/` dir, as well as the source for each stored under the `data/music-xmls/` dir. Note: `TemplateSheet` is not an example but is the original source of the templates used for template matching.
