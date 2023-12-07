@@ -7,22 +7,10 @@ from BarLine_Classification import BarLine_Classification
 from CreateBarBoxes import CreateBarBoxes
 from node_recognition_output import note_recognition
 from Structure_Data import Structure_Data
-from remove_detect_line import detectionLine
+from remove_detect_line import detectionLine, removeLine
 from Determine_Note import Determine_Note
 from export_mxl import export
 import cv2 as cv
-
-
-def removeLine(image, value, output):
-    img = image
-    val = value
-    gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    bw_gray = cv.bitwise_not(gray)
-    _, threshold_gray = cv.threshold(bw_gray, 100, 255, cv.THRESH_BINARY)
-    vertical_kernel = cv.getStructuringElement(cv.MORPH_RECT, (1, val))
-    vertical = cv.morphologyEx(threshold_gray, cv.MORPH_OPEN, vertical_kernel)
-    vertical_inverted = cv.bitwise_not(vertical)
-    cv.imwrite(output, vertical_inverted)
 
 
 def main(imagePath, outputName):    
